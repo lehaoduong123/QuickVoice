@@ -39,24 +39,28 @@ On first launch, the Whisper model will be downloaded (~500MB for `small`). Afte
 
 ## macOS Permissions Setup
 
-QuickVoice needs two macOS permissions to work. Without these, hotkey detection and audio recording will fail.
+QuickVoice needs macOS permissions to work. Without these, hotkey detection and audio recording will fail.
+
+> ⚠️ **IMPORTANT: Terminal vs. Auto-Start**
+> - If running from the **Terminal**, grant these permissions to your Terminal app (e.g., iTerm2, Warp, Terminal).
+> - If using **Auto-Start on Login** (Launch Agent), you must grant these permissions directly to your **Python executable** (e.g., `/opt/homebrew/Caskroom/miniconda/base/bin/python3`). In System Settings, click the `+` button, press `⌘ + Shift + G`, and paste your python path.
 
 ### 1. Accessibility (required for global hotkey)
 
 1. Open **System Settings** → **Privacy & Security** → **Accessibility**
 2. Click the **+** button (unlock with your password if needed)
-3. Add your **terminal app** (e.g., Terminal, iTerm2, Warp, VS Code)
+3. Add your **Terminal app** OR your **Python executable**
 4. Make sure the toggle is **ON**
 
-> Without this, you'll see: `"This process is not trusted! Input event monitoring will not be possible"`
+> Without this, the app will crash and logs will show: `"This process is not trusted! Input event monitoring will not be possible"`
 
 ### 2. Microphone (required for audio recording)
 
 1. Open **System Settings** → **Privacy & Security** → **Microphone**
-2. Find your **terminal app** in the list
+2. Find your **Terminal app** OR **Python executable**
 3. Make sure the toggle is **ON**
 
-> If your terminal isn't listed, it will appear automatically the first time QuickVoice tries to record. Click **Allow** when prompted.
+> If running in terminal, it will appear automatically the first time QuickVoice tries to record. Click **Allow** when prompted.
 
 ### 3. Automation (required for auto-paste)
 
