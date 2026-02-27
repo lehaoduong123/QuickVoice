@@ -2,8 +2,6 @@
 
 **Local voice-to-text for macOS** — hold a key, speak, release, and transcribed text is pasted at your cursor. Powered by OpenAI's Whisper, running 100% locally.
 
-Inspired by [Wispr Flow](https://www.wispr.com/).
-
 ## Features
 
 - 🔒 **Fully local** — no cloud, no API keys, your audio never leaves your machine
