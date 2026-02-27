@@ -37,9 +37,33 @@ python3 quickvoice.py
 
 On first launch, the Whisper model will be downloaded (~500MB for `small`). After that, it's cached locally.
 
-You'll need to grant these permissions in **System Settings → Privacy & Security**:
-- **Accessibility** — for your terminal app (global hotkey detection)
-- **Microphone** — for your terminal app (audio recording)
+## macOS Permissions Setup
+
+QuickVoice needs two macOS permissions to work. Without these, hotkey detection and audio recording will fail.
+
+### 1. Accessibility (required for global hotkey)
+
+1. Open **System Settings** → **Privacy & Security** → **Accessibility**
+2. Click the **+** button (unlock with your password if needed)
+3. Add your **terminal app** (e.g., Terminal, iTerm2, Warp, VS Code)
+4. Make sure the toggle is **ON**
+
+> Without this, you'll see: `"This process is not trusted! Input event monitoring will not be possible"`
+
+### 2. Microphone (required for audio recording)
+
+1. Open **System Settings** → **Privacy & Security** → **Microphone**
+2. Find your **terminal app** in the list
+3. Make sure the toggle is **ON**
+
+> If your terminal isn't listed, it will appear automatically the first time QuickVoice tries to record. Click **Allow** when prompted.
+
+### 3. Automation (required for auto-paste)
+
+1. Open **System Settings** → **Privacy & Security** → **Automation**
+2. Find your **terminal app** and enable **System Events**
+
+> Without this, transcribed text will be copied to your clipboard but won't auto-paste. You can still paste manually with ⌘V.
 
 ## Usage
 
