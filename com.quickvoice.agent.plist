@@ -7,8 +7,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/env</string>
-        <string>python3</string>
+        <string>/opt/homebrew/Caskroom/miniconda/base/bin/python3</string>
         <string>/Users/oliver/Documents/QuickVoice/quickvoice.py</string>
     </array>
 
