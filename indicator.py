@@ -104,12 +104,12 @@ class RecordingIndicator:
 
     def _create_window(self):
         """Create the floating indicator window (must be called on main thread)."""
-        # Window size and position (top-center of screen)
+        # Window size and position (bottom-center of screen)
         width, height = 80, 28
         screen = NSScreen.mainScreen()
         screen_frame = screen.frame()
         x = (screen_frame.size.width - width) / 2
-        y = screen_frame.size.height - height - 5  # 5px from top
+        y = 50  # 50px from bottom
 
         frame = NSMakeRect(x, y, width, height)
 

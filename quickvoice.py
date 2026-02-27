@@ -76,6 +76,9 @@ def start_recording():
     print("🎙  Recording... (release key to stop)")
     if indicator:
         indicator.show()
+    
+    # Play start sound (Submarine/Pop)
+    subprocess.Popen(["afplay", "/System/Library/Sounds/Pop.aiff"], stderr=subprocess.DEVNULL)
 
 
 def _audio_callback(in_data, frame_count, time_info, status):
@@ -110,6 +113,9 @@ def stop_recording():
     print(f"⏹  Stopped recording ({duration:.1f}s)")
     if indicator:
         indicator.show_transcribing()
+    
+    # Play stop sound (Tink)
+    subprocess.Popen(["afplay", "/System/Library/Sounds/Tink.aiff"], stderr=subprocess.DEVNULL)
 
     # Convert frames to WAV in memory
     wav_buffer = io.BytesIO()
