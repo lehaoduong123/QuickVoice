@@ -215,6 +215,7 @@ def main():
     print("  QuickVoice — Local Voice-to-Text")
     print("=" * 50)
     print()
+    sys.stdout.flush()
 
     # Load model
     load_model()
@@ -226,14 +227,25 @@ def main():
     print(f"   Languages: auto-detect (EN / ZH / VI)")
     print(f"   Press Ctrl+C to quit.")
     print()
+    sys.stdout.flush()
 
-    # Start global key listener
-    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+    # Start global key listener with retry logic for Launch Agent resilience
+    while True:
         try:
-            listener.join()
+            with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+                print("✓ Keyboard listener started.")
+                sys.stdout.flush()
+                listener.join()
         except KeyboardInterrupt:
             print("\n👋 QuickVoice stopped.")
             sys.exit(0)
+        except Exception as e:
+            print(f"⚠️  Keyboard listener failed: {e}")
+            print("   Retrying in 30 seconds...")
+            print("   Tip: Grant Accessibility permission to Python in")
+            print("   System Settings → Privacy & Security → Accessibility")
+            sys.stdout.flush()
+            time.sleep(30)
 
 
 if __name__ == "__main__":
