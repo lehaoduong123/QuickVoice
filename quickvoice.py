@@ -140,8 +140,6 @@ def transcribe(wav_buffer):
             min_silence_duration_ms=200,   # Split on shorter pauses
             speech_pad_ms=100,
         ),
-        # Shorter segments = better per-segment language detection
-        max_new_tokens=128,
     )
 
     text = " ".join(segment.text.strip() for segment in segments).strip()
