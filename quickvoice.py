@@ -20,8 +20,10 @@ import pyaudio
 import pyperclip
 from pynput import keyboard
 from faster_whisper import WhisperModel
+from AppKit import NSApplication
 
 import config
+from indicator import RecordingIndicator
 
 
 # ─── Globals ─────────────────────────────────────────────────────
@@ -32,6 +34,7 @@ frames = []
 is_recording = False
 record_start_time = 0.0
 lock = threading.Lock()
+indicator = None
 
 
 # ─── Model Loading ───────────────────────────────────────────────
@@ -71,6 +74,8 @@ def start_recording():
     )
     stream.start_stream()
     print("🎙  Recording... (release key to stop)")
+    if indicator:
+        indicator.show()
 
 
 def _audio_callback(in_data, frame_count, time_info, status):
@@ -93,6 +98,8 @@ def stop_recording():
     if duration < config.MIN_RECORD_SECONDS:
         print("⚡ Too short — ignored.")
         _cleanup_audio()
+        if indicator:
+            indicator.hide()
         return None
 
     # Stop the stream
@@ -101,6 +108,8 @@ def stop_recording():
     _cleanup_audio()
 
     print(f"⏹  Stopped recording ({duration:.1f}s)")
+    if indicator:
+        indicator.show_transcribing()
 
     # Convert frames to WAV in memory
     wav_buffer = io.BytesIO()
@@ -200,11 +209,15 @@ def on_release(key):
 
 def _process_recording():
     """Stop recording, transcribe, and paste."""
-    wav_buffer = stop_recording()
-    if wav_buffer is None:
-        return
-    text = transcribe(wav_buffer)
-    paste_text(text)
+    try:
+        wav_buffer = stop_recording()
+        if wav_buffer is None:
+            return
+        text = transcribe(wav_buffer)
+        paste_text(text)
+    finally:
+        if indicator:
+            indicator.hide()
 
 
 # ─── Main ─────────────────────────────────────────────────────────
@@ -227,23 +240,34 @@ def main():
     print()
     sys.stdout.flush()
 
-    # Start global key listener with retry logic for Launch Agent resilience
-    while True:
-        try:
-            with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-                print("✓ Keyboard listener started.")
+    # Initialize the indicator
+    global indicator
+    indicator = RecordingIndicator()
+
+    # Function to monitor and restart the listener if it fails
+    def monitor_listener():
+        while True:
+            try:
+                with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+                    print("✓ Keyboard listener started.")
+                    sys.stdout.flush()
+                    listener.join()
+            except Exception as e:
+                print(f"⚠️  Keyboard listener failed: {e}")
+                print("   Retrying in 30 seconds...")
                 sys.stdout.flush()
-                listener.join()
-        except KeyboardInterrupt:
-            print("\n👋 QuickVoice stopped.")
-            sys.exit(0)
-        except Exception as e:
-            print(f"⚠️  Keyboard listener failed: {e}")
-            print("   Retrying in 30 seconds...")
-            print("   Tip: Grant Accessibility permission to Python in")
-            print("   System Settings → Privacy & Security → Accessibility")
-            sys.stdout.flush()
-            time.sleep(30)
+                time.sleep(30)
+
+    # Start listener in a background thread so the main thread can run the AppKit event loop
+    threading.Thread(target=monitor_listener, daemon=True).start()
+
+    # Run the native macOS event loop on the main thread (required for the UI overlay)
+    app = NSApplication.sharedApplication()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        print("\n👋 QuickVoice stopped.")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
